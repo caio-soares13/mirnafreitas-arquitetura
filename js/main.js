@@ -6,49 +6,49 @@ const projetos = [
     categoria: 'Residencial',
     nome: 'Caminho das Marinas II',
     frase: 'Soluções projetuais com foco no bem estar dos usuários',
-    imagens: ['caminho-das-marinas-imagem1.png', 'caminho-das-marinas-imagem2.png', 'caminho-das-marinas-imagem3.png'],
+    imagens: ['caminho-das-marinas-imagem1.webp', 'caminho-das-marinas-imagem2.webp', 'caminho-das-marinas-imagem3.webp'],
   },
   {
     categoria: 'Residencial',
     nome: 'Mosaico Ponta Negra',
     frase: 'Respeito e valorização de diferentes formas de viver',
-    imagens: ['mosaico-ponta-negra-imagem1.png', 'mosaico-ponta-negra-imagem2.png', 'mosaico-ponta-negra-imagem3.png'],
+    imagens: ['mosaico-ponta-negra-imagem1.webp', 'mosaico-ponta-negra-imagem2.webp', 'mosaico-ponta-negra-imagem3.webp'],
   },
   {
     categoria: 'Residencial',
     nome: 'Quinta das Marinas',
     frase: 'Integração entre o ambiente construído e o natural',
-    imagens: ['quinta-das-marinas-imagem1.png', 'quinta-das-marinas-imagem2.png', 'quinta-das-marinas-imagem3.png'],
+    imagens: ['quinta-das-marinas-imagem1.webp', 'quinta-das-marinas-imagem2.webp', 'quinta-das-marinas-imagem3.webp'],
   },
   {
     categoria: 'Residencial',
     nome: 'Chácaras Rio Negro',
     frase: 'Funcionalidade, conforto e custo acessível',
-    imagens: ['chacaras-rio-negro-imagem1.png', 'chacaras-rio-negro-imagem2.png'],
+    imagens: ['chacaras-rio-negro-imagem1.webp', 'chacaras-rio-negro-imagem2.webp'],
   },
   {
     categoria: 'Residencial',
     nome: 'Reserva do Parque',
     frase: 'Eficiência e bom desempenho do ambiente construído',
-    imagens: ['reserva-do-parque-imagem1.png'],
+    imagens: ['reserva-do-parque-imagem1.webp'],
   },
   {
     categoria: 'Residencial',
     nome: 'Chácaras Rio Negro II',
     frase: 'Eficiência e bom desempenho do ambiente construído',
-    imagens: ['chacaras-rio-negro2-imagem1.png'],
+    imagens: ['chacaras-rio-negro2-imagem1.webp'],
   },
   {
     categoria: 'Interiores',
     nome: 'Apartamento Marcia Lira',
     frase: 'Soluções personalizadas para diferentes necessidades e espaços',
-    imagens: ['apartamento-marcia-lira-imagem1.png', 'apartamento-marcia-lira-imagem2.png'],
+    imagens: ['apartamento-marcia-lira-imagem1.webp', 'apartamento-marcia-lira-imagem2.webp'],
   },
   {
     categoria: 'Comercial',
     nome: 'Revistaria Página 7',
     frase: 'Foco na experiência dos usuários',
-    imagens: ['revistaria-pagina-7-imagem1.png', 'revistaria-pagina-7-imagem2.png', 'revistaria-pagina-7-imagem3.png'],
+    imagens: ['revistaria-pagina-7-imagem1.webp', 'revistaria-pagina-7-imagem2.webp', 'revistaria-pagina-7-imagem3.webp'],
   },
 ];
 
@@ -64,15 +64,33 @@ const caixa = document.querySelector('.faixa-imagem');
 const fotos = document.querySelectorAll('.foto');
 const projeto = document.getElementById('projeto');
 const frase = document.getElementById('frase');
-const numero = document.getElementById('numero');
+const tira = document.getElementById('miniaturas');
 
 // Pré-carrega as imagens para a troca não "piscar"
 slides.forEach(s => { new Image().src = s.src; });
 
-const doisDigitos = n => String(n).padStart(2, '0');
-document.getElementById('total').textContent = doisDigitos(slides.length);
 // O zoom dura a exibição inteira, incluindo a troca seguinte
 caixa.style.setProperty('--tempo-zoom', `${INTERVALO + TRANSICAO * 2}ms`);
+
+// Miniaturas: um respiro maior separa um projeto do outro
+const minis = slides.map((s, i) => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'mini' + (i === 0 || slides[i - 1].nome !== s.nome ? ' inicio-projeto' : '');
+  b.title = s.nome;
+  b.setAttribute('aria-label', `${s.nome} — imagem ${i + 1}`);
+  b.innerHTML = `<img src="${s.src}" alt="" loading="lazy">`;
+  b.addEventListener('click', () => { ir(i); reiniciar(); });
+  tira.appendChild(b);
+  return b;
+});
+
+function marcarMiniatura() {
+  minis.forEach((b, i) => b.setAttribute('aria-current', String(i === atual)));
+  // mantém a miniatura ativa visível sem rolar a página
+  const b = minis[atual];
+  tira.scrollTo({ left: b.offsetLeft - tira.clientWidth / 2 + b.offsetWidth / 2 });
+}
 
 let atual = 0;
 let visivel = 0; // qual das duas <img> está na frente
@@ -113,7 +131,7 @@ function ir(i) {
 
     trocarTexto(projeto, s.nome);
     trocarTexto(frase, s.frase);
-    numero.textContent = doisDigitos(novo + 1);
+    marcarMiniatura();
     setTimeout(() => { trocando = false; }, TRANSICAO);
   };
   entra.decode ? entra.decode().then(mostrar, mostrar) : mostrar();
@@ -151,4 +169,5 @@ faixa.addEventListener('mouseleave', iniciar);
 document.addEventListener('visibilitychange', () => (document.hidden ? parar() : iniciar()));
 
 fotos[0].decode?.().then(() => ajustarProporcao(fotos[0]), () => {});
+marcarMiniatura();
 iniciar();

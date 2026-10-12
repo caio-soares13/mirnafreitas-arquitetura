@@ -67,9 +67,6 @@ p { margin: 0; }
   background: var(--dourado);
 }
 
-.servicos { text-align: right; }
-.servicos-titulo { font-size: clamp(1rem, 1.8vw, 1.4rem); font-weight: 500; }
-.servicos-lista { margin-top: .3rem; font-size: clamp(.85rem, 1.2vw, 1rem); }
 
 main { flex: 1; display: flex; flex-direction: column; justify-content: center; }
 
@@ -144,15 +141,46 @@ main { flex: 1; display: flex; flex-direction: column; justify-content: center; 
 .projeto, .frase { transition: opacity calc(var(--duracao) / 2) ease; }
 .saindo { opacity: 0; }
 
-/* Contador 01 / 18 */
-.contador {
-  color: var(--claro);
-  font-size: .8rem;
-  letter-spacing: .2em;
-  font-variant-numeric: tabular-nums;
+/* Miniaturas sob a faixa */
+.miniaturas {
+  position: relative;
+  display: flex;
+  gap: .5rem;
+  overflow-x: auto;
+  padding: .75rem clamp(1rem, 3vw, 3rem);
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
 }
-.contador #numero { color: var(--dourado); }
-.contador .total { opacity: .5; }
+.mini {
+  flex: none;
+  position: relative;
+  width: clamp(5rem, 7vw, 6.5rem);
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  opacity: .45;
+  filter: grayscale(.4);
+  transition: opacity .35s, filter .35s;
+}
+.mini img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mini::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -.4rem;
+  height: 2px;
+  background: var(--dourado);
+  transform: scaleX(0);
+  transition: transform .35s ease;
+}
+.mini:hover { opacity: .85; filter: none; }
+.mini[aria-current="true"] { opacity: 1; filter: none; }
+.mini[aria-current="true"]::after { transform: scaleX(1); }
+.mini.inicio-projeto { margin-left: .75rem; }
+.mini.inicio-projeto:first-child { margin-left: 0; }
 
 /* Setas */
 .nav {
@@ -177,11 +205,39 @@ main { flex: 1; display: flex; flex-direction: column; justify-content: center; 
 .faixa:hover .nav, .nav:focus-visible { opacity: 1; }
 .nav:hover { background: rgb(29 27 20 / .75); }
 
+/* Serviços: linha entre as miniaturas e o Sobre mim */
+.servicos {
+  margin: clamp(2.5rem, 7vh, 4rem) auto 0;
+  padding: 0 1rem;
+  text-align: center;
+}
+.servicos-titulo {
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+}
+.servicos-lista {
+  margin-top: .55rem;
+  color: var(--frase);
+  font-size: clamp(.95rem, 1.4vw, 1.05rem);
+}
+.servicos-lista span { margin: 0 .45em; color: var(--dourado); }
+/* filete vertical que conduz ao Sobre mim */
+.servicos::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: clamp(2.5rem, 6vh, 3.5rem);
+  margin: clamp(1.75rem, 4vh, 2.5rem) auto 0;
+  background: #d9d4c1;
+}
+
 /* Sobre mim */
 .sobre {
   max-width: 50rem;
   margin: 0 auto;
-  padding: clamp(3rem, 9vh, 5.5rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 3vh, 2rem);
+  padding: clamp(1.75rem, 4vh, 2.5rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 3vh, 2rem);
   text-align: center;
 }
 
@@ -250,13 +306,16 @@ main { flex: 1; display: flex; flex-direction: column; justify-content: center; 
 .rodape a { color: inherit; text-decoration: none; }
 .rodape a { transition: color .25s; }
 .rodape a:hover { color: var(--dourado); }
-.nav:focus-visible, .rodape a:focus-visible { outline: 2px solid var(--dourado); outline-offset: 3px; }
+/* Ícone do WhatsApp: segue a cor do texto (e fica dourado junto no hover) */
+.contato-zap { display: inline-flex; align-items: center; gap: .5em; }
+.contato-zap .icone { width: 1.05em; height: 1.05em; flex: none; color: var(--icone-zap, currentColor); }
+.nav:focus-visible, .mini:focus-visible, .rodape a:focus-visible { outline: 2px solid var(--dourado); outline-offset: 3px; }
 
 
 /* Celular / tablet em pé */
 @media (max-width: 760px) {
   .topo { flex-direction: column; align-items: flex-start; }
-  .servicos { text-align: left; }
+  .servicos-titulo { font-size: .7rem; letter-spacing: .18em; }
 
   .faixa { flex-direction: column; height: auto; background: var(--escuro); }
   .faixa-imagem { width: 100%; height: auto; aspect-ratio: 2 / 1; }

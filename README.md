@@ -21,6 +21,7 @@ Depois abra http://localhost:8080. (Abrir o `index.html` direto no navegador tam
 
 Tudo fica na lista `projetos` no início de `js/main.js`: nome, frase e imagens.
 Para adicionar um projeto, coloque as imagens em `img/` e acrescente um bloco na lista.
+Prefira imagens em WebP (bem mais leves que PNG); qualquer conversor online ou o Squoosh (squoosh.app) resolve.
 O tempo de cada imagem é `INTERVALO` (em milissegundos).
 
 ## Publicar

@@ -1,42 +1,51 @@
 // Para adicionar ou trocar projetos, edite apenas esta lista.
+// "categoria" é Residencial, Comercial ou Interiores; aparece como "Categoria - Nome".
 // "frase" é a mensagem de destaque exibida junto às imagens do projeto.
 const projetos = [
   {
-    nome: 'Residência Caminho das Marinas II',
+    categoria: 'Residencial',
+    nome: 'Caminho das Marinas II',
     frase: 'Soluções projetuais com foco no bem estar dos usuários',
     imagens: ['caminho-das-marinas-imagem1.png', 'caminho-das-marinas-imagem2.png', 'caminho-das-marinas-imagem3.png'],
   },
   {
-    nome: 'Residência Mosaico Ponta Negra',
+    categoria: 'Residencial',
+    nome: 'Mosaico Ponta Negra',
     frase: 'Respeito e valorização de diferentes formas de viver',
     imagens: ['mosaico-ponta-negra-imagem1.png', 'mosaico-ponta-negra-imagem2.png', 'mosaico-ponta-negra-imagem3.png'],
   },
   {
-    nome: 'Residência Quinta das Marinas',
+    categoria: 'Residencial',
+    nome: 'Quinta das Marinas',
     frase: 'Integração entre o ambiente construído e o natural',
     imagens: ['quinta-das-marinas-imagem1.png', 'quinta-das-marinas-imagem2.png', 'quinta-das-marinas-imagem3.png'],
   },
   {
-    nome: 'Residência Chácaras Rio Negro',
+    categoria: 'Residencial',
+    nome: 'Chácaras Rio Negro',
     frase: 'Funcionalidade, conforto e custo acessível',
     imagens: ['chacaras-rio-negro-imagem1.png', 'chacaras-rio-negro-imagem2.png'],
   },
   {
-    nome: 'Residência Reserva do Parque',
+    categoria: 'Residencial',
+    nome: 'Reserva do Parque',
     frase: 'Eficiência e bom desempenho do ambiente construído',
     imagens: ['reserva-do-parque-imagem1.png'],
   },
   {
-    nome: 'Residência Chácaras Rio Negro II',
+    categoria: 'Residencial',
+    nome: 'Chácaras Rio Negro II',
     frase: 'Eficiência e bom desempenho do ambiente construído',
     imagens: ['chacaras-rio-negro2-imagem1.png'],
   },
   {
-    nome: 'Interiores - Apartamento Marcia Lira',
+    categoria: 'Interiores',
+    nome: 'Apartamento Marcia Lira',
     frase: 'Soluções personalizadas para diferentes necessidades e espaços',
     imagens: ['apartamento-marcia-lira-imagem1.png', 'apartamento-marcia-lira-imagem2.png'],
   },
   {
+    categoria: 'Comercial',
     nome: 'Revistaria Página 7',
     frase: 'Foco na experiência dos usuários',
     imagens: ['revistaria-pagina-7-imagem1.png', 'revistaria-pagina-7-imagem2.png', 'revistaria-pagina-7-imagem3.png'],
@@ -47,7 +56,7 @@ const INTERVALO = 5000; // tempo de cada imagem (ms)
 const TRANSICAO = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--duracao')) || 0;
 
 const slides = projetos.flatMap(p =>
-  p.imagens.map(img => ({ src: `img/${img}`, nome: p.nome, frase: p.frase }))
+  p.imagens.map(img => ({ src: `img/${img}`, nome: `${p.categoria} - ${p.nome}`, frase: p.frase }))
 );
 
 const faixa = document.querySelector('.faixa');

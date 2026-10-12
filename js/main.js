@@ -51,58 +51,71 @@ const slides = projetos.flatMap(p =>
 );
 
 const faixa = document.querySelector('.faixa');
-const foto = document.getElementById('foto');
+const caixa = document.querySelector('.faixa-imagem');
+const fotos = document.querySelectorAll('.foto');
 const projeto = document.getElementById('projeto');
 const frase = document.getElementById('frase');
-const pontos = document.getElementById('pontos');
+const numero = document.getElementById('numero');
 
 // Pré-carrega as imagens para a troca não "piscar"
 slides.forEach(s => { new Image().src = s.src; });
 
-const botoes = slides.map((s, i) => {
-  const b = document.createElement('button');
-  b.type = 'button';
-  b.setAttribute('role', 'tab');
-  b.setAttribute('aria-label', `${s.nome} — imagem ${i + 1}`);
-  b.addEventListener('click', () => { ir(i); reiniciar(); });
-  pontos.appendChild(b);
-  return b;
-});
+const doisDigitos = n => String(n).padStart(2, '0');
+document.getElementById('total').textContent = doisDigitos(slides.length);
+// O zoom dura a exibição inteira, incluindo a troca seguinte
+caixa.style.setProperty('--tempo-zoom', `${INTERVALO + TRANSICAO * 2}ms`);
 
 let atual = 0;
+let visivel = 0; // qual das duas <img> está na frente
 let timer = null;
 let trocando = false;
 
-function marcarPonto() {
-  botoes.forEach((b, i) => b.setAttribute('aria-selected', String(i === atual)));
+function ajustarProporcao(img) {
+  if (img.naturalWidth) caixa.style.setProperty('--proporcao', img.naturalWidth / img.naturalHeight);
+}
+
+function trocarTexto(el, texto) {
+  if (el.textContent === texto) return;
+  el.classList.add('saindo');
+  setTimeout(() => { el.textContent = texto; el.classList.remove('saindo'); }, TRANSICAO / 2);
 }
 
 function ir(i) {
   const novo = (i + slides.length) % slides.length;
   if (novo === atual || trocando) return;
-  const s = slides[novo];
-  const mudaTexto = s.frase !== slides[atual].frase;
-  const mudaNome = s.nome !== slides[atual].nome;
-
   trocando = true;
-  frase.classList.toggle('muda', mudaTexto);
-  projeto.classList.toggle('muda', mudaNome);
-  faixa.classList.add('trocando');
 
-  setTimeout(() => {
+  const s = slides[novo];
+  const entra = fotos[1 - visivel];
+  const sai = fotos[visivel];
+  entra.src = s.src;
+  entra.alt = s.nome;
+  sai.alt = '';
+
+  const mostrar = () => {
     atual = novo;
-    foto.src = s.src;
-    foto.alt = s.nome;
-    projeto.textContent = s.nome;
-    frase.textContent = s.frase;
-    marcarPonto();
-    const mostrar = () => { faixa.classList.remove('trocando'); trocando = false; };
-    foto.decode ? foto.decode().then(mostrar, mostrar) : mostrar();
-  }, TRANSICAO);
+    visivel = 1 - visivel;
+    ajustarProporcao(entra);
+    // reinicia o zoom da foto que entra; a que sai continua até sumir
+    entra.classList.remove('zoom');
+    void entra.offsetWidth;
+    entra.classList.add('zoom', 'ativa');
+    sai.classList.remove('ativa');
+
+    trocarTexto(projeto, s.nome);
+    trocarTexto(frase, s.frase);
+    numero.textContent = doisDigitos(novo + 1);
+    setTimeout(() => { trocando = false; }, TRANSICAO);
+  };
+  entra.decode ? entra.decode().then(mostrar, mostrar) : mostrar();
 }
 
-function iniciar() { parar(); timer = setInterval(() => ir(atual + 1), INTERVALO); }
-function parar() { clearInterval(timer); timer = null; }
+function iniciar() {
+  parar();
+  faixa.classList.remove('pausado');
+  timer = setInterval(() => ir(atual + 1), INTERVALO);
+}
+function parar() { clearInterval(timer); timer = null; faixa.classList.add('pausado'); }
 function reiniciar() { if (timer) iniciar(); }
 
 document.querySelector('.anterior').addEventListener('click', () => { ir(atual - 1); reiniciar(); });
@@ -128,5 +141,5 @@ faixa.addEventListener('mouseenter', parar);
 faixa.addEventListener('mouseleave', iniciar);
 document.addEventListener('visibilitychange', () => (document.hidden ? parar() : iniciar()));
 
-marcarPonto();
+fotos[0].decode?.().then(() => ajustarProporcao(fotos[0]), () => {});
 iniciar();
